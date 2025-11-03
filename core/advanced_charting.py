@@ -647,7 +647,7 @@ class AdvancedCharting:
                 indicators = self.calculate_technical_indicators(data, ["RSI", "MACD", "SMA"])
                 trend = self._determine_trend(data, indicators)
                 momentum = self._calculate_momentum(data)
-                analysis["timeframes"][timeframe] = {
+                analysis["timeframes"][timeframe] = {  # type: ignore[index]
                     "trend": trend,
                     "momentum": momentum,
                     "indicators": {
@@ -668,8 +668,8 @@ class AdvancedCharting:
                     "support_resistance": self._find_support_resistance(data),
                 }
             analysis["alignment"] = self._check_timeframe_alignment(analysis["timeframes"])  # type: ignore[arg-type]
-            analysis["signals"] = self._generate_mtf_signals(  # type: ignore[arg-type]
-                analysis["timeframes"], analysis["alignment"]
+            analysis["signals"] = self._generate_mtf_signals(
+                analysis["timeframes"], analysis["alignment"]  # type: ignore[arg-type]
             )
             return analysis
         except Exception as e:
@@ -823,13 +823,13 @@ class AdvancedCharting:
             for tf_name, tf_data in timeframes.items():
                 trend = tf_data.get("trend", "neutral")
                 if trend == "bullish" and signals["primary_signal"] == "buy":
-                    signals["supporting_factors"].append(f"{tf_name} bullish trend")  # type: ignore[union-attr]
+                    signals["supporting_factors"].append(f"{tf_name} bullish trend")  # type: ignore[attr-defined]
                 elif trend == "bearish" and signals["primary_signal"] == "sell":
-                    signals["supporting_factors"].append(f"{tf_name} bearish trend")  # type: ignore[union-attr]
-                elif trend != "neutral" and trend != signals["primary_signal"].replace(  # type: ignore[union-attr]
+                    signals["supporting_factors"].append(f"{tf_name} bearish trend")  # type: ignore[attr-defined]
+                elif trend != "neutral" and trend != signals["primary_signal"].replace(  # type: ignore[attr-defined]
                     "buy", "bullish"
                 ).replace("sell", "bearish"):
-                    signals["conflicting_factors"].append(f"{tf_name} {trend} trend")  # type: ignore[union-attr]
+                    signals["conflicting_factors"].append(f"{tf_name} {trend} trend")  # type: ignore[attr-defined]
             return signals
         except Exception:
             return {"primary_signal": "neutral", "confidence": 0}
