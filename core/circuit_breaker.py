@@ -215,6 +215,20 @@ class CircuitBreaker:
         with self.lock:
             return self.state
 
+    @property
+    def is_open(self) -> bool:
+        """Check if circuit breaker is currently open."""
+        with self.lock:
+            return self.state == CircuitState.OPEN
+
+    def record_success(self) -> None:
+        """Record a successful operation (compatibility method)."""
+        self._on_success()
+
+    def record_failure(self) -> None:
+        """Record a failed operation (compatibility method)."""
+        self._on_failure()
+
     def get_stats(self) -> Dict[str, Any]:
         """Get circuit breaker statistics."""
         with self.lock:
