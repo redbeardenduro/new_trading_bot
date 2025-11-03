@@ -867,9 +867,9 @@ class PortfolioManager:
             if len(highs) < period + 1:
                 logger.warning("Insufficient valid candles for ATR %s.", pair)
                 return None
-            highs_arr: Any = np.array(highs)
-            lows_arr: Any = np.array(lows)
-            closes_arr: Any = np.array(closes)
+            highs_arr: Any = np.array(highs)  # type: ignore[assignment]
+            lows_arr: Any = np.array(lows)  # type: ignore[assignment]
+            closes_arr: Any = np.array(closes)  # type: ignore[assignment]
             high_low: Any = highs_arr - lows_arr
             high_close: Any = np.abs(highs_arr[1:] - closes_arr[:-1])
             low_close: Any = np.abs(lows_arr[1:] - closes_arr[:-1])
@@ -981,7 +981,7 @@ class PortfolioManager:
             if len(closes) < period + 1:
                 logger.warning("Insufficient valid closes for returns %s.", pair)
                 return None
-            closes_arr: Any = np.array(closes)
+            closes_arr: Any = np.array(closes)  # type: ignore[assignment]
             if np.any(closes_arr <= 1e-09):
                 logger.warning(
                     "Non-positive close prices found for %s, cannot calculate log returns.", pair

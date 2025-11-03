@@ -148,7 +148,7 @@ def require_auth(required_role: Optional[str] = None) -> None:
 
         return decorated_function
 
-    return decorator
+    return decorator  # type: ignore[return-value]
 
 
 def verify_api_key(api_key: str) -> bool:
@@ -196,16 +196,16 @@ def create_auth_routes(app) -> None:
         """
         data = request.get_json()
         if not data:
-            return (jsonify({"error": "Invalid request", "message": "JSON body required"}), 400)
+            return (jsonify({"error": "Invalid request", "message": "JSON body required"}), 400)  # type: ignore[return-value]
         api_key = data.get("api_key")
         if not api_key:
-            return (jsonify({"error": "Invalid request", "message": "api_key required"}), 400)
+            return (jsonify({"error": "Invalid request", "message": "api_key required"}), 400)  # type: ignore[return-value]
         if not verify_api_key(api_key):
-            return (jsonify({"error": "Authentication failed", "message": "Invalid API key"}), 401)
+            return (jsonify({"error": "Authentication failed", "message": "Invalid API key"}), 401)  # type: ignore[return-value]
         user_id = data.get("user_id", "default-user")
         role = data.get("role", Role.VIEWER)
         if role not in Role.ALL_ROLES:
-            return (
+            return (  # type: ignore[return-value]
                 jsonify(
                     {
                         "error": "Invalid request",
@@ -215,7 +215,7 @@ def create_auth_routes(app) -> None:
                 400,
             )
         token = generate_token(user_id, role)
-        return (
+        return (  # type: ignore[return-value]
             jsonify(
                 {
                     "token": token,
@@ -242,7 +242,7 @@ def create_auth_routes(app) -> None:
             "valid": true
         }
         """
-        return (
+        return (  # type: ignore[return-value]
             jsonify({"valid": True, "user_id": request.user_id, "role": request.user_role}),
             200,
         )

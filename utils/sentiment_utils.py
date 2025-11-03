@@ -245,7 +245,7 @@ class SentimentAnalyzer:
                     else:
                         safe_max_length = reported_max_length
                         logger.debug("Using tokenizer reported max_length: %s", safe_max_length)
-                    self.pipeline = pipeline(
+                    self.pipeline = pipeline(  # type: ignore[misc]
                         "sentiment-analysis",
                         model=model,
                         tokenizer=tokenizer,

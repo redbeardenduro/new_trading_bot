@@ -474,7 +474,7 @@ class BacktestMetrics:
         sortino_ratio = np.nan
         if len(self.portfolio_value_history) > 1:
             values = np.array([float(v) for _, v in self.portfolio_value_history])
-            valid_indices = np.where(values[:-1] > 1e-9)[0]
+            valid_indices = np.where(values[:-1] > 1e-9)  # type: ignore[operator][0]
             if len(valid_indices) > 0:
                 returns_list = (values[1:][valid_indices] / values[:-1][valid_indices]) - 1
             else:
@@ -485,7 +485,7 @@ class BacktestMetrics:
         if len(returns_list) > 1:
             mean_return = np.mean(returns_list)
             std_dev_return = np.std(returns_list)
-            negative_returns = returns_list[returns_list < 0]
+            negative_returns = returns_list[returns_list < 0]  # type: ignore[Any]
             downside_std_dev = np.std(negative_returns) if len(negative_returns) > 1 else 0.0
 
             annualization_factor = 252

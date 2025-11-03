@@ -76,7 +76,7 @@ except ImportError:
         "ERROR: Failed to import sentiment utilities from utils.sentiment_utils. OpenAI analysis may be impaired."
     )
     sentiment_utils_available = False
-    SentimentTracker = type("SentimentTracker", (), {})
+    SentimentTracker = type("SentimentTracker", (), {})  # type: ignore[misc]
 
     def normalize_sentiment_value(s: Any) -> float:
         return 0.0

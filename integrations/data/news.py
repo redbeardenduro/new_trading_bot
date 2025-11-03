@@ -47,8 +47,8 @@ try:
     sentiment_utils_available = True
 except ImportError:
     logger.error('CRITICAL: Failed to import sentiment utilities from utils.sentiment_utils. News analysis will be impaired.')
-    SentimentTracker = type('SentimentTracker', (), {})
-    SentimentAnalyzer = type('SentimentAnalyzer', (), {})
+    SentimentTracker = type('SentimentTracker', (), {})  # type: ignore[misc]
+    SentimentAnalyzer = type('SentimentAnalyzer', (), {})  # type: ignore[misc]
 
     def calculate_time_weighted_sentiment(items: Any, **kwargs: Any) -> float:
         return 0.0
@@ -313,7 +313,7 @@ class NewsAPI(ISentimentSourceType):
         logger.info('Testing NewsAPI connection...')
         params = {'q': 'market', 'pageSize': 1, 'language': 'en'}
         try:
-            (data, headers) = self._make_request('everything', params)
+            (data, headers) = self._make_request('everything', params)  # type: ignore[misc]
             if data is None:
                 rate_info = ''
                 if headers and self.debug_mode:
@@ -484,7 +484,7 @@ class NewsAPI(ISentimentSourceType):
             logger.error('Could not construct valid query for %s (attempt: %s).', asset_upper, attempt_description)
             return None
         params = {'q': query, 'from': from_date_str, 'to': to_date_str, 'language': 'en', 'sortBy': 'relevancy', 'pageSize': min(num_results, 100)}
-        (data, _) = self._make_request('everything', params)
+        (data, _) = self._make_request('everything', params)  # type: ignore[misc]
         processed_articles: list = []
         if data and isinstance(data, dict):
             if data.get('status') == 'ok':

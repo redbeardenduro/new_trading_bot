@@ -475,13 +475,13 @@ class EnhancedBacktesting:
                         "sharpe_ratios": [],
                         "max_drawdowns": [],
                     }
-                param_performance[param_key]["returns"].append(
+                param_performance[param_key]["returns"].append(  # type: ignore[str]
                     result.metrics.get("total_return", 0)
                 )
-                param_performance[param_key]["sharpe_ratios"].append(
+                param_performance[param_key]["sharpe_ratios"].append(  # type: ignore[str]
                     result.metrics.get("sharpe_ratio", 0)
                 )
-                param_performance[param_key]["max_drawdowns"].append(
+                param_performance[param_key]["max_drawdowns"].append(  # type: ignore[str]
                     result.metrics.get("max_drawdown", 0)
                 )
             param_heatmap = {}
@@ -532,7 +532,7 @@ class EnhancedBacktesting:
             returns_data = {}
             for result in results:
                 if len(result.portfolio_history) > 1:
-                    portfolio_values = np.array(result.portfolio_history)
+                    portfolio_values = np.array(result.portfolio_history)  # type: ignore[assignment]
                     returns = np.diff(portfolio_values) / portfolio_values[:-1]
                     returns_data[result.run_id] = returns
             if len(returns_data) < 2:

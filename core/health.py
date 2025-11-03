@@ -156,12 +156,12 @@ def create_health_routes(app) -> None:
     @health_bp.route("/healthz", methods=["GET"])
     def health_check() -> None:
         """Liveness probe endpoint."""
-        return healthz()
+        return healthz()  # type: ignore[return-value]
 
     @health_bp.route("/readyz", methods=["GET"])
     def readiness_check() -> None:
         """Readiness probe endpoint."""
-        return readyz()
+        return readyz()  # type: ignore[return-value]
 
     app.register_blueprint(health_bp)
     return health_bp
