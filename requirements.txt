@@ -1,0 +1,42 @@
+# Enhanced Trading Bot Dependencies
+# ----------------------------------
+# Recommendation: For a reproducible environment, consider pinning versions
+# using '==' (e.g., pandas==2.0.3) after installing in your environment
+# and running 'pip freeze'.
+
+# Core & Data Handling
+pandas>=1.3.0       # Data manipulation and analysis (used everywhere)
+numpy>=1.20.0       # Numerical operations (pandas dependency, used directly too)
+
+# API Interaction & Exchange
+ccxt>=2.0.0         # Crypto Exchange Trading Library (Kraken integration)
+ccxt[pro]>=4.0.0    # CCXT Pro for async/WebSocket support
+requests>=2.25.0    # HTTP requests (NewsAPI integration)
+backoff>=1.10.0     # Exponential backoff for retries (API clients)
+praw>=7.6.0         # Python Reddit API Wrapper (Reddit integration)
+openai>=1.3.0       # OpenAI API Client Library (v1.x required)
+
+# Sentiment Analysis
+# Note: Ensure PyTorch is installed correctly for your system (CPU/GPU)
+# See: https://pytorch.org/get-started/locally/
+torch>=1.9.0        # Required by transformers (HuggingFace)
+transformers>=4.10.0 # HuggingFace models/pipelines (SentimentAnalyzer)
+accelerate>=0.5.0   # HuggingFace helper for device/precision management
+nltk>=3.6.0         # Natural Language Toolkit (for VADER fallback)
+# >> Run 'python -m nltk.downloader vader_lexicon' after installing nltk <<
+
+# Testing & Plotting
+matplotlib>=3.4.0   # Plotting library (backtest_plotter.py)
+pytest>=6.2.5       # Testing framework (Optional, for running unit/integration tests)
+
+# Configuration and Validation (NEW - for enhanced config schema)
+pydantic>=2.0.0     # Data validation and settings management
+python-dotenv>=1.0.0 # Load environment variables from .env files
+
+# Monitoring and Metrics (NEW - for Prometheus integration)
+prometheus-client>=0.19.0 # Prometheus metrics collection and exposition
+
+# Type Checking
+mypy>=1.0.0         # Static type checker for Python
+types-requests>=2.25.0  # Type stubs for requests
+types-backoff>=1.10.0   # Type stubs for backoff
