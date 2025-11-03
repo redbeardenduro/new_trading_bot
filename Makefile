@@ -44,14 +44,18 @@ format-check:
 	isort --check-only --diff .
 
 # Type Checking
+# Note: Use python3 -m mypy to ensure correct Python environment and type stubs
 type-check:
-	mypy core/ utils/ common/ integrations/ai/ integrations/data/ --config-file mypy.ini
+	python3 -m mypy core/ utils/ common/ integrations/ai/ integrations/data/ --config-file mypy.ini
+
+type-check-all:
+	python3 -m mypy . --config-file mypy.ini
 
 type-check-strict:
 	@echo "Running strict type checking (may fail until all issues are resolved)..."
 	@cp mypy.ini mypy-strict.ini
 	@sed -i 's/# strict = True/strict = True/' mypy-strict.ini
-	@mypy core/ utils/ common/ integrations/ai/ integrations/data/ --config-file mypy-strict.ini || true
+	@python3 -m mypy core/ utils/ common/ integrations/ai/ integrations/data/ --config-file mypy-strict.ini || true
 	@rm -f mypy-strict.ini
 
 # Security
