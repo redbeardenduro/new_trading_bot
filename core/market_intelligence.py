@@ -90,10 +90,10 @@ class MarketIntelligence:
             config: Configuration dictionary
         """
         self.config = config or {}
-        self.sentiment_cache = {}
-        self.news_cache = {}
-        self.alerts = []
-        self.correlation_history = []
+        self.sentiment_cache: dict = {}
+        self.news_cache: dict = {}
+        self.alerts: list = []
+        self.correlation_history: list = []
         self.reddit_enabled = self.config.get("reddit_enabled", False)
         self.news_enabled = self.config.get("news_enabled", False)
         self.twitter_enabled = self.config.get("twitter_enabled", False)
@@ -128,12 +128,12 @@ class MarketIntelligence:
             }
         except Exception as e:
             logger.error("Error in sentiment radar: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     async def _aggregate_asset_sentiment(self, asset: str) -> Dict[str, Any]:
         """Aggregate sentiment data for a specific asset"""
         try:
-            sentiment_sources = []
+            sentiment_sources: list = []
             if self.reddit_enabled:
                 reddit_sentiment = await self._get_reddit_sentiment(asset)
                 if reddit_sentiment:
@@ -181,7 +181,7 @@ class MarketIntelligence:
         """Generate sample sentiment data for demonstration"""
         np.random.seed(hash(asset + str(datetime.now().date())) % 2**32)
         sources = ["reddit", "news", "twitter"]
-        sentiment_data = []
+        sentiment_data: list = []
         for source in sources:
             base_sentiment = np.random.normal(0, 0.3)
             if asset == "BTC":
@@ -243,7 +243,7 @@ class MarketIntelligence:
 
     def _generate_radar_data(self, sentiment_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Generate data for sentiment radar chart"""
-        radar_data = []
+        radar_data: list = []
         for asset, data in sentiment_data.items():
             radar_data.append(
                 {
@@ -275,7 +275,7 @@ class MarketIntelligence:
 
     def _identify_trending_assets(self, sentiment_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Identify trending assets based on sentiment"""
-        trending = []
+        trending: list = []
         for asset, data in sentiment_data.items():
             if data["volume"] > 500 and abs(data["sentiment_score"]) > 0.3:
                 trending.append(
@@ -311,7 +311,7 @@ class MarketIntelligence:
         """
         try:
             news_articles = await self._fetch_recent_news(limit)
-            analyzed_articles = []
+            analyzed_articles: list = []
             for article in news_articles:
                 impact = await self._analyze_article_impact(article)
                 analyzed_articles.append(impact)
@@ -321,7 +321,7 @@ class MarketIntelligence:
             )
             high_impact_count = len([a for a in analyzed_articles if a.impact_score > 0.7])
             all_keywords = [kw for a in analyzed_articles for kw in a.keywords]
-            keyword_counts = {}
+            keyword_counts: dict = {}
             for kw in all_keywords:
                 keyword_counts[kw] = keyword_counts.get(kw, 0) + 1
             top_keywords = sorted(keyword_counts.items(), key=lambda x: x[1], reverse=True)[:10]
@@ -339,7 +339,7 @@ class MarketIntelligence:
             }
         except Exception as e:
             logger.error("Error in news impact analysis: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     async def _fetch_recent_news(self, limit: int) -> List[Dict[str, Any]]:
         """Fetch recent news articles (simulated)"""
@@ -355,7 +355,7 @@ class MarketIntelligence:
             "Stablecoin regulations proposed by financial authorities",
             "Blockchain technology adoption accelerates in enterprise",
         ]
-        news_articles = []
+        news_articles: list = []
         for i in range(min(limit, len(sample_headlines))):
             news_articles.append(
                 {
@@ -375,9 +375,9 @@ class MarketIntelligence:
         headline = article["headline"].lower()
         positive_keywords = ["high", "adoption", "improvement", "recovery", "launch", "accelerate"]
         negative_keywords = ["concern", "breach", "downturn", "regulation", "debate", "weigh"]
-        sentiment_score = 0
+        sentiment_score = 0.0
         impact_score = 0.5
-        keywords = []
+        keywords: list = []
         for word in positive_keywords:
             if word in headline:
                 sentiment_score += 0.2
@@ -454,7 +454,7 @@ class MarketIntelligence:
         """
         try:
             if not price_data:
-                return {"error": "No price data available"}
+                return {"error": "No price data available"}  # type: ignore[dict-item]
             regime_analysis = {}
             for asset, data in price_data.items():
                 if "close" not in data.columns or len(data) < 50:
@@ -477,7 +477,7 @@ class MarketIntelligence:
             }
         except Exception as e:
             logger.error("Error in market regime detection: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     def _analyze_asset_regime(self, prices: np.ndarray, returns: np.ndarray) -> Dict[str, Any]:
         """Analyze regime for a single asset"""
@@ -545,7 +545,7 @@ class MarketIntelligence:
 
     def _detect_regime_changes(self, regime_analysis: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Detect recent regime changes (simulated)"""
-        changes = []
+        changes: list = []
         for asset, data in regime_analysis.items():
             if np.random.random() < 0.2:
                 changes.append(
@@ -573,7 +573,7 @@ class MarketIntelligence:
         """Calculate market stress indicators"""
         stress_indicators = {}
         try:
-            all_returns = []
+            all_returns: list = []
             correlations = []
             for asset, data in price_data.items():
                 if "close" in data.columns and len(data) > 1:
@@ -651,13 +651,13 @@ class MarketIntelligence:
             }
         except Exception as e:
             logger.error("Error calculating Fear & Greed Index: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     def _calculate_momentum_score(self, price_data: Dict[str, pd.DataFrame]) -> float:
         """Calculate momentum component score (0-100)"""
         if not price_data:
             return 50
-        momentum_scores = []
+        momentum_scores: list = []
         for asset, data in price_data.items():
             if "close" in data.columns and len(data) >= 30:
                 prices = data["close"].values
@@ -673,7 +673,7 @@ class MarketIntelligence:
         """Calculate volatility component score (0-100, inverted - high vol = fear)"""
         if not price_data:
             return 50
-        volatility_scores = []
+        volatility_scores: list = []
         for asset, data in price_data.items():
             if "close" in data.columns and len(data) >= 20:
                 prices = data["close"].values
@@ -701,7 +701,7 @@ class MarketIntelligence:
         """Calculate volume component score (0-100)"""
         if not price_data:
             return 50
-        volume_scores = []
+        volume_scores: list = []
         for asset, data in price_data.items():
             if "volume" in data.columns and len(data) >= 20:
                 volumes = data["volume"].values
@@ -748,7 +748,7 @@ class MarketIntelligence:
         try:
             if not alert_config:
                 alert_config = self._get_default_alert_config()
-            alerts = []
+            alerts: list = []
             price_alerts = self._check_price_alerts(market_data.get("price_data", {}), alert_config)
             alerts.extend(price_alerts)
             sentiment_alerts = self._check_sentiment_alerts(
@@ -792,7 +792,7 @@ class MarketIntelligence:
         self, price_data: Dict[str, pd.DataFrame], config: Dict[str, Any]
     ) -> List[MarketAlert]:
         """Check for price-based alerts"""
-        alerts = []
+        alerts: list = []
         threshold = config.get("price_change_threshold", 0.05)
         for asset, data in price_data.items():
             if "close" in data.columns and len(data) >= 2:
@@ -824,7 +824,7 @@ class MarketIntelligence:
         self, sentiment_data: Dict[str, Any], config: Dict[str, Any]
     ) -> List[MarketAlert]:
         """Check for sentiment-based alerts"""
-        alerts = []
+        alerts: list = []
         threshold = config.get("sentiment_extreme_threshold", 0.7)
         overall_sentiment = sentiment_data.get("overall_sentiment", {})
         sentiment_score = overall_sentiment.get("score", 0)
@@ -852,7 +852,7 @@ class MarketIntelligence:
         self, price_data: Dict[str, pd.DataFrame], config: Dict[str, Any]
     ) -> List[MarketAlert]:
         """Check for volume-based alerts"""
-        alerts = []
+        alerts: list = []
         threshold = config.get("volume_change_threshold", 2.0)
         for asset, data in price_data.items():
             if "volume" in data.columns and len(data) >= 20:
@@ -883,7 +883,7 @@ class MarketIntelligence:
         self, regime_data: Dict[str, Any], config: Dict[str, Any]
     ) -> List[MarketAlert]:
         """Check for regime change alerts"""
-        alerts = []
+        alerts: list = []
         regime_changes = regime_data.get("regime_changes", [])
         for change in regime_changes:
             change_time = datetime.fromisoformat(change["change_timestamp"].replace("Z", "+00:00"))
@@ -905,7 +905,7 @@ class MarketIntelligence:
         self, fg_data: Dict[str, Any], config: Dict[str, Any]
     ) -> List[MarketAlert]:
         """Check for Fear & Greed Index alerts"""
-        alerts = []
+        alerts: list = []
         threshold = config.get("fear_greed_extreme_threshold", 20)
         index_value = fg_data.get("index_value", 50)
         if index_value <= threshold or index_value >= 100 - threshold:
@@ -948,7 +948,7 @@ class MarketIntelligence:
         """
         try:
             if len(price_data) < 2:
-                return {"error": "Need at least 2 assets for correlation analysis"}
+                return {"error": "Need at least 2 assets for correlation analysis"}  # type: ignore[dict-item]
             returns_data = {}
             for asset, data in price_data.items():
                 if "close" in data.columns and len(data) > window:
@@ -956,7 +956,7 @@ class MarketIntelligence:
                     returns = np.diff(prices) / prices[:-1]
                     returns_data[asset] = returns
             if len(returns_data) < 2:
-                return {"error": "Insufficient data for correlation analysis"}
+                return {"error": "Insufficient data for correlation analysis"}  # type: ignore[dict-item]
             min_length = min((len(returns) for returns in returns_data.values()))
             aligned_returns = {}
             for asset, returns in returns_data.items():
@@ -1006,7 +1006,7 @@ class MarketIntelligence:
             }
         except Exception as e:
             logger.error("Error calculating correlation matrix: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     def _identify_correlation_clusters(
         self, corr_matrix: np.ndarray, assets: List[str]
@@ -1021,14 +1021,14 @@ class MarketIntelligence:
                 n_clusters=n_clusters, metric="precomputed", linkage="average"
             )
             cluster_labels = clustering.fit_predict(distance_matrix)
-            clusters = []
+            clusters: list = []
             for cluster_id in range(n_clusters):
                 cluster_assets = [
                     assets[i] for (i, label) in enumerate(cluster_labels) if label == cluster_id
                 ]
                 if len(cluster_assets) > 1:
                     indices = [assets.index(asset) for asset in cluster_assets]
-                    cluster_correlations = []
+                    cluster_correlations: list = []
                     for i in range(len(indices)):
                         for j in range(i + 1, len(indices)):
                             cluster_correlations.append(corr_matrix[indices[i], indices[j]])
@@ -1052,7 +1052,7 @@ class MarketIntelligence:
         self, corr_matrix: np.ndarray, assets: List[str]
     ) -> List[Dict[str, Any]]:
         """Find strongest correlations"""
-        correlations = []
+        correlations: list = []
         n_assets = len(assets)
         for i in range(n_assets):
             for j in range(i + 1, n_assets):
@@ -1067,7 +1067,7 @@ class MarketIntelligence:
         self, corr_matrix: np.ndarray, assets: List[str]
     ) -> List[Dict[str, Any]]:
         """Find weakest correlations"""
-        correlations = []
+        correlations: list = []
         n_assets = len(assets)
         for i in range(n_assets):
             for j in range(i + 1, n_assets):

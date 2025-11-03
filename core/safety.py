@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
+from typing import Any
 
 from core.alerting import Alerter
 
 
 class SafetyGuard:
 
-    def __init__(self, config) -> None:
+    def __init__(self, config: dict[str, Any]) -> None:
         self.config = config
         self.alerter = Alerter(config)
         self.daily_loss_limit = Decimal(self.config.get("daily_loss_limit", "-1000"))
@@ -18,7 +19,7 @@ class SafetyGuard:
         self.circuit_breaker_tripped = False
         self.circuit_breaker_reason = None
 
-    def check_daily_loss_limit(self) -> None:
+    def check_daily_loss_limit(self) -> bool:
         """Checks if the daily loss limit has been exceeded."""
         if datetime.utcnow().date() > self.last_reset_date:
             self.realized_pnl_today = Decimal("0")
@@ -31,7 +32,7 @@ class SafetyGuard:
             return False
         return True
 
-    def check_asset_exposure(self, asset_notional_value) -> None:
+    def check_asset_exposure(self, asset_notional_value: Decimal) -> bool:
         """Checks if the notional value of an asset exceeds the maximum exposure."""
         if asset_notional_value > self.max_per_asset_exposure:
             self.trip_circuit_breaker(
@@ -40,7 +41,7 @@ class SafetyGuard:
             return False
         return True
 
-    def check_clock_drift(self, exchange_timestamp) -> None:
+    def check_clock_drift(self, exchange_timestamp: float) -> bool:
         """Checks for clock drift between the system and the exchange."""
         system_timestamp = datetime.utcnow()
         exchange_dt = datetime.fromtimestamp(exchange_timestamp / 1000)
@@ -52,14 +53,14 @@ class SafetyGuard:
             return False
         return True
 
-    def trip_circuit_breaker(self, reason) -> None:
+    def trip_circuit_breaker(self, reason: str) -> None:
         """Trips the global circuit breaker."""
         self.circuit_breaker_tripped = True
         self.circuit_breaker_reason = reason
         print(f"CIRCUIT BREAKER TRIPPED: {reason}")
         self.alerter.send_alert("Circuit Breaker Tripped", reason)
 
-    def can_trade(self) -> None:
+    def can_trade(self) -> bool:
         """Checks if trading is allowed."""
         if self.circuit_breaker_tripped:
             print(
@@ -68,7 +69,7 @@ class SafetyGuard:
             return False
         return True
 
-    def update_pnl(self, realized_pnl, unrealized_pnl) -> None:
+    def update_pnl(self, realized_pnl: Decimal, unrealized_pnl: Decimal) -> None:
         """Updates the PnL values."""
         self.realized_pnl_today += realized_pnl
         self.unrealized_pnl = unrealized_pnl

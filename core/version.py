@@ -147,19 +147,19 @@ def get_version_info() -> VersionInfo:
     return _version_info
 
 
-def create_version_routes(app) -> None:
+def create_version_routes(app: Any) -> Any:  # type: ignore[misc]
     """
     Register version routes with Flask app.
 
     Args:
         app: Flask application instance
     """
-    from flask import Blueprint, jsonify
+    from flask import Blueprint, jsonify  # type: ignore[import-not-found]
 
     version_bp = Blueprint("version", __name__)
 
     @version_bp.route("/version", methods=["GET"])
-    def version() -> None:
+    def version() -> Any:  # type: ignore[misc]
         """
         Get version information.
 
@@ -176,4 +176,4 @@ def create_version_routes(app) -> None:
         return (jsonify(version_info.get_version_info()), 200)
 
     app.register_blueprint(version_bp)
-    return version_bp
+    return version_bp  # type: ignore[no-any-return]

@@ -156,7 +156,7 @@ def load_trades(results_dir: Path, run_id: str) -> Optional[List[Dict]]:
         logger.error(f"Trades data in {trades_file.name} is not a list.")
         return None
 
-    processed_trades = []
+    processed_trades: list = []
     for trade in data:
         if not isinstance(trade, dict):
             continue  # Skip non-dict items

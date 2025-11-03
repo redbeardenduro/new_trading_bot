@@ -59,7 +59,7 @@ class PortfolioManager:
         num_assets = len(self.base_currencies)
         if num_assets == 0:
             logger.warning("PortfolioManager initialized with no base currencies!")
-            self.target_allocations = {}
+            self.target_allocations: dict = {}
         else:
             self.target_allocations = {asset: 1.0 / num_assets for asset in self.base_currencies}
         try:
@@ -232,7 +232,7 @@ class PortfolioManager:
                 logger.warning("Failed to calculate dynamic threshold. Using fixed threshold.")
                 threshold = self.rebalance_threshold
         logger.info("Rebalance threshold: %.2f%%", threshold * 100)
-        trades_to_make = []
+        trades_to_make: list = []
         skipped_trades = []
         max_rebalance_cost_pct = Decimal(
             str(self.config.get("portfolio.simulation.max_rebalance_cost_percent", 10.0))
@@ -318,7 +318,7 @@ class PortfolioManager:
                     "target_allocation": target_alloc,
                 }
             )
-        executed_trades_info = []
+        executed_trades_info: list = []
         trades_to_make.sort(
             key=lambda x: abs(x["target_allocation"] - x["current_allocation"]), reverse=True
         )
@@ -666,7 +666,7 @@ class PortfolioManager:
             if not sentiment_metrics_dict or not isinstance(sentiment_metrics_dict, dict):
                 factors[asset] = 1.0
                 continue
-            strengths = []
+            strengths: list = []
             for metrics in sentiment_metrics_dict.values():
                 if isinstance(metrics, dict):
                     strength_val = metrics.get("strength")
@@ -900,7 +900,7 @@ class PortfolioManager:
         logger.debug("Calculating dynamic rebalance threshold...")
         if total_portfolio_value <= Decimal("1e-9"):
             return None
-        volatilities = []
+        volatilities: list = []
         for asset in self.base_currencies:
             pair = f"{asset}/{self.quote_currency}"
             atr = self._calculate_atr(pair, self.volatility_lookback, market_state)
@@ -966,7 +966,7 @@ class PortfolioManager:
             )
             return None
         try:
-            closes = []
+            closes: list = []
             for c in ohlcv_data[-(period + 1) :]:
                 try:
                     if isinstance(c, dict):
@@ -1285,7 +1285,7 @@ class PortfolioManager:
             return
         temp_file = self.skipped_trades_log_file.with_suffix(f".tmp_{time.time_ns()}")
         try:
-            log_list = []
+            log_list: list = []
             if self.skipped_trades_log_file.exists():
                 try:
                     with self.skipped_trades_log_file.open("r", encoding="utf-8") as f:
@@ -1295,9 +1295,9 @@ class PortfolioManager:
                             if isinstance(loaded_list, list):
                                 log_list = loaded_list
                 except json.JSONDecodeError:
-                    log_list = []
+                    log_list: list = []
                 except OSError:
-                    log_list = []
+                    log_list: list = []
             log_list.extend(skipped_trades_list)
             max_log_entries = self.config.get("logging.max_skipped_trade_log_entries", 5000)
             if len(log_list) > max_log_entries:

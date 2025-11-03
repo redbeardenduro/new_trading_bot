@@ -227,29 +227,29 @@ class MultiCryptoTradingBot:
                     self.news_cache_file,
                     e,
                 )
-                self.news_cache = {}
+                self.news_cache: dict = {}
             except OSError as e:
                 logger.error(
                     "OS error reading news cache file %s: %s. Initializing empty cache.",
                     self.news_cache_file,
                     e,
                 )
-                self.news_cache = {}
+                self.news_cache: dict = {}
             except Exception as e:
                 logger.error(
                     "Unexpected error loading news cache: %s. Initializing empty cache.",
                     e,
                     exc_info=True,
                 )
-                self.news_cache = {}
+                self.news_cache: dict = {}
         else:
             logger.info("News cache file not found. Initializing empty cache.")
-            self.news_cache = {}
+            self.news_cache: dict = {}
 
     def _update_news_cache(self, asset: str, news_data: Optional[dict]) -> None:
         """Updates the news cache and saves it atomically."""
         if not hasattr(self, "news_cache"):
-            self.news_cache = {}
+            self.news_cache: dict = {}
         if news_data is None:
             logger.debug("Skipping news cache update for %s: data is None.", asset)
             return
@@ -677,7 +677,7 @@ class MultiCryptoTradingBot:
                     current_price = float(price_val)
             except (IndexError, ValueError, TypeError):
                 pass
-        ohlcv_recent = []
+        ohlcv_recent: list = []
         if ohlcv and isinstance(ohlcv, list):
             try:
                 ohlcv_recent = [
@@ -872,7 +872,7 @@ class MultiCryptoTradingBot:
         """Generates a trading signal based on technical indicators."""
         logger.debug("Generating technical signal for %s", pair)
         indicators = self.market_data[pair].get("indicators", {})
-        signals = []
+        signals: list = []
         if not indicators:
             return "hold"
         rsi = indicators.get("RSI")
@@ -930,7 +930,7 @@ class MultiCryptoTradingBot:
         metrics_dict = self.market_data[pair].get("sentiment_metrics", {})
         if not metrics_dict or not isinstance(metrics_dict, dict):
             return "hold"
-        strengths = []
+        strengths: list = []
         for metrics in metrics_dict.values():
             if isinstance(metrics, dict) and "strength" in metrics:
                 try:
@@ -1045,7 +1045,7 @@ class MultiCryptoTradingBot:
                 agreement = -0.15
             else:
                 agreement = 0.05
-        confidences = []
+        confidences: list = []
         tech_conf = 0.5
         confidences.append(tech_conf)
         sent_metrics = md.get("sentiment_metrics", {})
@@ -1096,7 +1096,7 @@ class MultiCryptoTradingBot:
                 agreement = 2
             elif len(set(signal_list)) < len(signal_list):
                 agreement = 1
-        confidences = []
+        confidences: list = []
         sent_metrics = md.get("sentiment_metrics", {})
         if isinstance(sent_metrics, dict) and sent_metrics:
             sent_confs = [
@@ -1530,7 +1530,7 @@ class MultiCryptoTradingBot:
         logger.warning("Skipping %s %s: %s", action.upper(), pair, reason)
         temp_file = self.bot_skipped_trades_log_file.with_suffix(f".tmp_{time.time_ns()}")
         try:
-            log_list = []
+            log_list: list = []
             if self.bot_skipped_trades_log_file.exists():
                 try:
                     with self.bot_skipped_trades_log_file.open("r", encoding="utf-8") as f:
@@ -1540,9 +1540,9 @@ class MultiCryptoTradingBot:
                             if isinstance(loaded_list, list):
                                 log_list = loaded_list
                 except json.JSONDecodeError:
-                    log_list = []
+                    log_list: list = []
                 except OSError:
-                    log_list = []
+                    log_list: list = []
             log_list.append(log_entry)
             max_log_entries = self.config.get("logging.max_skipped_trade_log_entries", 5000)
             if len(log_list) > max_log_entries:
@@ -1959,7 +1959,7 @@ class MultiCryptoTradingBot:
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "metrics": self.performance_metrics,
             }
-            log_list = []
+            log_list: list = []
             if mfile.exists():
                 try:
                     with mfile.open("r", encoding="utf-8") as f:
@@ -1969,9 +1969,9 @@ class MultiCryptoTradingBot:
                             if isinstance(loaded_list, list):
                                 log_list = loaded_list
                 except json.JSONDecodeError:
-                    log_list = []
+                    log_list: list = []
                 except OSError:
-                    log_list = []
+                    log_list: list = []
             log_list.append(data_to_save)
             with temp_file.open("w", encoding="utf-8") as f:
                 json.dump(log_list, f, indent=2)
@@ -2215,7 +2215,7 @@ def main() -> None:
         interval_seconds = 60
     exchange_client = None
     portfolio_manager = None
-    sentiment_sources = []
+    sentiment_sources: list = []
     ai_analyzer = None
     sentiment_tracker = None
     try:

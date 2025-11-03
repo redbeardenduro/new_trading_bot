@@ -494,7 +494,7 @@ class OrderManagerEnhanced:
         """
         cutoff_time = datetime.now(timezone.utc).timestamp() - days * 86400
         removed_count = 0
-        orders_to_remove = []
+        orders_to_remove: list = []
         for order_id, order in self.orders.items():
             if order.status in [OrderStatus.FILLED, OrderStatus.CANCELED, OrderStatus.REJECTED]:
                 if order.updated_at.timestamp() < cutoff_time:

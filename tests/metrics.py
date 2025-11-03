@@ -38,6 +38,7 @@ class BacktestMetrics:
     """
 
     def __init__(self, initial_capital: Decimal, quote_currency: str):
+        self.initial_capital: Decimal
         if not isinstance(initial_capital, Decimal):
             try:
                 self.initial_capital = Decimal(str(initial_capital))
@@ -47,6 +48,7 @@ class BacktestMetrics:
         else:
             self.initial_capital = initial_capital
 
+        self.quote_currency: str
         if not isinstance(quote_currency, str) or not quote_currency.strip():
             logger.error(f"Invalid quote_currency '{quote_currency}'. Using 'USD'.")
             self.quote_currency = "USD"
@@ -467,7 +469,7 @@ class BacktestMetrics:
             win_rate = avg_win = avg_loss = avg_duration_seconds = profit_factor = Decimal("0.0")
 
         # --- Risk Metrics (Sharpe, Sortino, Drawdown) ---
-        returns_list = []
+        returns_list: list = []
         sharpe_ratio = np.nan
         sortino_ratio = np.nan
         if len(self.portfolio_value_history) > 1:

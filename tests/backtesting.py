@@ -379,7 +379,7 @@ class SimulatedExchange(IExchangeClient):
         if data_slice.empty:
             return []
 
-        ohlcv_list = []
+        ohlcv_list: list = []
         for timestamp, row in data_slice.iterrows():
             try:
                 ts_ms = int(timestamp.timestamp() * 1000)
@@ -815,7 +815,7 @@ class BacktestRunner:
         logger.info(
             f"Loading historical OHLCV data: {self.pairs} ({self.timeframe}) from {self.historical_ohlcv_dir}"
         )
-        missing_pairs = []
+        missing_pairs: list = []
         loaded_data = {}
 
         if not self.historical_ohlcv_dir.exists():

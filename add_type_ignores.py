@@ -39,7 +39,7 @@ def fix_unreachable_statements(filepath: Path) -> int:
     return 0
 
 
-def main():
+def main() -> None:
     """Process all Python files in core/."""
     project_root = Path("/home/ubuntu/production_trading_bot")
     core_dir = project_root / "core"

@@ -180,7 +180,7 @@ def log_reddit_sentiment(symbol: str, analyzed_posts: List[Dict]) -> None:
         return
     log_file = CACHE_DIR / f'{symbol.upper()}_Reddit_sentiment.json'
     logger.debug('Logging %s analyzed Reddit posts for %s to %s', len(analyzed_posts), symbol, log_file)
-    existing_logs = []
+    existing_logs: list = []
     existing_urls = set()
     if log_file.exists():
         try:
@@ -197,17 +197,17 @@ def log_reddit_sentiment(symbol: str, analyzed_posts: List[Dict]) -> None:
                         logger.warning('Existing log file %s is not a list. Overwriting.', log_file)
         except json.JSONDecodeError:
             logger.error('Error decoding JSON from %s. Log file might be corrupted. Overwriting.', log_file)
-            existing_logs = []
+            existing_logs: list = []
             existing_urls = set()
         except OSError as e:
             logger.error('OS error reading log file %s: %s. Will attempt to overwrite.', log_file, e)
-            existing_logs = []
+            existing_logs: list = []
             existing_urls = set()
         except Exception as e:
             logger.error('Unexpected error loading log file %s: %s. Will attempt to overwrite.', log_file, e, exc_info=True)
-            existing_logs = []
+            existing_logs: list = []
             existing_urls = set()
-    new_entries_to_add = []
+    new_entries_to_add: list = []
     log_timestamp = datetime.now(timezone.utc).isoformat()
     for post in analyzed_posts:
         if not isinstance(post, dict):
@@ -400,7 +400,7 @@ class RedditAPI(ISentimentSourceType):
         if cached_data is not None and isinstance(cached_data, list):
             return (True, cached_data)
         logger.info("Searching r/%s for '%s' (Limit=%s, Time=%s)", subreddit_name, query_str, limit, final_time_filter)
-        processed_posts = []
+        processed_posts: list = []
         try:
             self.rate_limiter.wait_if_needed()
             subreddit = self.reddit.subreddit(subreddit_name)
@@ -470,7 +470,7 @@ class RedditAPI(ISentimentSourceType):
         full_name = self._get_full_name(crypto_symbol)
         query = f'("{crypto_symbol}" OR "{full_name}")'
         all_posts_dict = {}
-        errors = []
+        errors: list = []
         for sub_name in subreddits:
             (success, result) = self.search_subreddit_posts(sub_name, query=query, limit=final_limit, time_filter=getattr(self.client_config, 'search_time_filter', 'week'))
             if success and isinstance(result, list):
@@ -505,7 +505,7 @@ class RedditAPI(ISentimentSourceType):
             logger.error('SentimentAnalyzer not initialized in RedditAPI.')
             default_result['error'] = 'Analyzer not available'
             return default_result
-        posts = []
+        posts: list = []
         if isinstance(posts_input, tuple):
             (success, result) = posts_input
             posts = result if success and isinstance(result, list) else []
@@ -518,7 +518,7 @@ class RedditAPI(ISentimentSourceType):
         bearish_threshold = getattr(self.sentiment_config, 'bearish_threshold', -0.05)
         baseline_count = getattr(self.sentiment_config, 'volume_baseline_count', 20)
         trend_window = getattr(self.sentiment_config, 'trend_window', 5)
-        items_with_sentiment = []
+        items_with_sentiment: list = []
         analyzed_posts_for_log = []
         total_weighted_sentiment = 0.0
         total_confidence = 0.0

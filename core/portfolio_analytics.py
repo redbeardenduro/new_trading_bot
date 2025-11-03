@@ -62,7 +62,7 @@ class PortfolioAnalytics:
         try:
             portfolio_returns = self.calculate_portfolio_returns()
             if portfolio_returns.empty:
-                return {"error": "No portfolio data available"}
+                return {"error": "No portfolio data available"}  # type: ignore[dict-item]
             portfolio_vol = portfolio_returns.std() * np.sqrt(252)
             factors = {}
             factor_loadings = {}
@@ -101,7 +101,7 @@ class PortfolioAnalytics:
             }
         except Exception as e:
             logger.error("Error in risk attribution analysis: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     def performance_attribution(self) -> Dict[str, Any]:
         """
@@ -113,7 +113,7 @@ class PortfolioAnalytics:
         try:
             portfolio_returns = self.calculate_portfolio_returns()
             if portfolio_returns.empty:
-                return {"error": "No portfolio data available"}
+                return {"error": "No portfolio data available"}  # type: ignore[dict-item]
             benchmark_returns = pd.Series()
             benchmark_name = "Market"
             for asset, data in self.market_data.items():
@@ -122,10 +122,10 @@ class PortfolioAnalytics:
                     benchmark_name = asset
                     break
             if benchmark_returns.empty:
-                return {"error": "No benchmark data available"}
+                return {"error": "No benchmark data available"}  # type: ignore[dict-item]
             aligned_data = pd.concat([portfolio_returns, benchmark_returns], axis=1).dropna()
             if aligned_data.empty:
-                return {"error": "No aligned data available"}
+                return {"error": "No aligned data available"}  # type: ignore[dict-item]
             port_ret = aligned_data.iloc[:, 0]
             bench_ret = aligned_data.iloc[:, 1]
             portfolio_annual_return = port_ret.mean() * 252
@@ -151,7 +151,7 @@ class PortfolioAnalytics:
             }
         except Exception as e:
             logger.error("Error in performance attribution: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     def sharpe_ratio_optimization(self, target_return: Optional[float] = None) -> Dict[str, Any]:
         """
@@ -171,10 +171,10 @@ class PortfolioAnalytics:
                     if len(returns) > 20:
                         asset_returns[asset] = returns
             if len(asset_returns) < 2:
-                return {"error": "Insufficient asset data for optimization"}
+                return {"error": "Insufficient asset data for optimization"}  # type: ignore[dict-item]
             returns_df = pd.DataFrame(asset_returns).dropna()
             if returns_df.empty:
-                return {"error": "No aligned returns data"}
+                return {"error": "No aligned returns data"}  # type: ignore[dict-item]
             assets = returns_df.columns.tolist()
             returns_matrix = returns_df.values
             expected_returns = returns_matrix.mean(axis=0) * 252
@@ -185,7 +185,7 @@ class PortfolioAnalytics:
                 portfolio_vol = np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
                 return -(portfolio_return - self.risk_free_rate) / portfolio_vol
 
-            constraints = {"type": "eq", "fun": lambda x: np.sum(x) - 1}
+            constraints = {"type": "eq", "fun": lambda x: np.sum(x) - 1}  # type: ignore[dict-item]
             bounds = tuple(((0, 1) for _ in range(len(assets))))
             initial_guess = np.array([1 / len(assets)] * len(assets))
             result = optimize.minimize(
@@ -224,10 +224,10 @@ class PortfolioAnalytics:
                     "risk_free_rate": self.risk_free_rate,
                 }
             else:
-                return {"error": "Optimization failed", "message": result.message}
+                return {"error": "Optimization failed", "message": result.message}  # type: ignore[dict-item]
         except Exception as e:
             logger.error("Error in Sharpe ratio optimization: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     def calculate_var(
         self, confidence_level: float = 0.05, method: str = "historical"
@@ -245,7 +245,7 @@ class PortfolioAnalytics:
         try:
             portfolio_returns = self.calculate_portfolio_returns()
             if portfolio_returns.empty:
-                return {"error": "No portfolio data available"}
+                return {"error": "No portfolio data available"}  # type: ignore[dict-item]
             results = {}
             if method in ["historical", "all"]:
                 historical_var = np.percentile(portfolio_returns, confidence_level * 100)
@@ -282,7 +282,7 @@ class PortfolioAnalytics:
             return results
         except Exception as e:
             logger.error("Error in VaR calculation: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     def _monte_carlo_var(
         self, returns: pd.Series, confidence_level: float, simulations: int = 10000
@@ -312,15 +312,15 @@ class PortfolioAnalytics:
         """
         try:
             if "portfolio_history" not in self.portfolio_data:
-                return {"error": "No portfolio history available"}
+                return {"error": "No portfolio history available"}  # type: ignore[dict-item]
             portfolio_values = pd.Series(self.portfolio_data["portfolio_history"])
             if portfolio_values.empty:
-                return {"error": "Empty portfolio history"}
+                return {"error": "Empty portfolio history"}  # type: ignore[dict-item]
             running_max = portfolio_values.expanding().max()
             drawdown = (portfolio_values - running_max) / running_max
             max_drawdown = drawdown.min()
             max_dd_date = drawdown.idxmin()
-            drawdown_periods = []
+            drawdown_periods: list = []
             in_drawdown = False
             start_date = None
             for date, dd in drawdown.items():
@@ -342,7 +342,7 @@ class PortfolioAnalytics:
                             }
                         )
             current_drawdown = drawdown.iloc[-1]
-            recovery_times = []
+            recovery_times: list = []
             for period in drawdown_periods:
                 if "duration_days" in period:
                     recovery_times.append(period["duration_days"])
@@ -368,7 +368,7 @@ class PortfolioAnalytics:
             }
         except Exception as e:
             logger.error("Error in drawdown analysis: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     def monte_carlo_simulation(self, days: int = 252, simulations: int = 1000) -> Dict[str, Any]:
         """
@@ -384,11 +384,11 @@ class PortfolioAnalytics:
         try:
             portfolio_returns = self.calculate_portfolio_returns()
             if portfolio_returns.empty:
-                return {"error": "No portfolio data available"}
+                return {"error": "No portfolio data available"}  # type: ignore[dict-item]
             mean_return = portfolio_returns.mean()
             std_return = portfolio_returns.std()
             current_value = self.portfolio_data.get("total_value", 100000)
-            simulation_results = []
+            simulation_results: list = []
             final_values = []
             for sim in range(simulations):
                 random_returns = np.random.normal(mean_return, std_return, days)
@@ -433,7 +433,7 @@ class PortfolioAnalytics:
             }
         except Exception as e:
             logger.error("Error in Monte Carlo simulation: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     def _calculate_skewness(self, data: np.ndarray) -> float:
         """Calculate skewness of data"""

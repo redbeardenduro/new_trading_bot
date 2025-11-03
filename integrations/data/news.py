@@ -86,7 +86,7 @@ def log_news_sentiment(symbol: str, articles_to_log: List[Dict]) -> None:
         return
     log_file = CACHE_DIR / f'{symbol.upper()}_News_sentiment.json'
     logger.debug('Logging %s analyzed news articles for %s to %s', len(articles_to_log), symbol, log_file)
-    existing_logs = []
+    existing_logs: list = []
     existing_urls = set()
     if log_file.exists():
         try:
@@ -103,17 +103,17 @@ def log_news_sentiment(symbol: str, articles_to_log: List[Dict]) -> None:
                         logger.warning('Existing log file %s is not a list. Overwriting.', log_file)
         except json.JSONDecodeError:
             logger.error('Error decoding JSON from %s. Log file might be corrupted. Overwriting.', log_file)
-            existing_logs = []
+            existing_logs: list = []
             existing_urls = set()
         except OSError as e:
             logger.error('OS error reading log file %s: %s. Will attempt to overwrite.', log_file, e)
-            existing_logs = []
+            existing_logs: list = []
             existing_urls = set()
         except Exception as e:
             logger.error('Unexpected error loading log file %s: %s. Will attempt to overwrite.', log_file, e, exc_info=True)
-            existing_logs = []
+            existing_logs: list = []
             existing_urls = set()
-    new_entries_to_add = []
+    new_entries_to_add: list = []
     log_timestamp = datetime.now(timezone.utc).isoformat()
     for article in articles_to_log:
         if not isinstance(article, dict):
@@ -485,7 +485,7 @@ class NewsAPI(ISentimentSourceType):
             return None
         params = {'q': query, 'from': from_date_str, 'to': to_date_str, 'language': 'en', 'sortBy': 'relevancy', 'pageSize': min(num_results, 100)}
         (data, _) = self._make_request('everything', params)
-        processed_articles = []
+        processed_articles: list = []
         if data and isinstance(data, dict):
             if data.get('status') == 'ok':
                 articles = data.get('articles', [])
@@ -528,7 +528,7 @@ class NewsAPI(ISentimentSourceType):
         bearish_threshold = getattr(self.sentiment_config, 'bearish_threshold', -0.05)
         baseline_count = getattr(self.sentiment_config, 'volume_baseline_count', 20)
         trend_window = getattr(self.sentiment_config, 'trend_window', 5)
-        items_with_sentiment = []
+        items_with_sentiment: list = []
         analyzed_articles_for_log = []
         total_weighted_sentiment = 0.0
         total_confidence = 0.0

@@ -23,7 +23,7 @@ def calculate_file_hash(filepath: Path) -> str:
     return hasher.hexdigest()
 
 
-def verify_audit_logs(log_dir: Path):
+def verify_audit_logs(log_dir: Path) -> None:
     """Verifies audit logs for tampering by recomputing rolling hashes.
 
     Args:
