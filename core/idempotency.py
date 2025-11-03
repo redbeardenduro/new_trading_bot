@@ -211,7 +211,7 @@ class IdempotencyManager:
     def _clean_expired(self) -> None:
         """Remove expired intents from cache."""
         now = time.time()
-        expired_keys = []
+        expired_keys: list = []
         for key, intent in self.intent_cache.items():
             if now - intent.timestamp > self.cache_ttl or intent.status in [
                 "filled",

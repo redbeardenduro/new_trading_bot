@@ -274,7 +274,7 @@ def slice_data(
 
 def flatten_dict(d: Dict, parent_key: str = "", sep: str = "_") -> Dict:
     """Flattens a nested dictionary."""
-    items = []
+    items: list = []
     if not isinstance(d, dict):
         return {}
 
@@ -339,7 +339,7 @@ class BatchTester:
 
     def define_parameter_variations(self) -> List[Dict[str, Any]]:
         """Defines the parameter sets to test, handling potential errors."""
-        variations = []
+        variations: list = []
 
         try:
             # Example: Varying position size percentage

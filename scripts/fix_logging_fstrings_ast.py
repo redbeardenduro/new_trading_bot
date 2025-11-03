@@ -7,7 +7,7 @@ from typing import List, Tuple
 LEVELS = {"debug", "info", "warning", "error", "critical"}
 
 
-def _extract_format_spec(node: ast.AST) -> str:
+def _extract_format_spec(node: ast.AST | None) -> str:
     """Return a simple format spec string like '.3f', '06d', '.2%' if we can.
     For JoinedStr specs, concatenate literal parts; ignore non-literals."""
     if node is None:
@@ -135,7 +135,8 @@ class FixLoggerFStrings(ast.NodeTransformer):
         if not fmt_args:
             return node
 
-        new_args = [ast.Constant(value=fmt, kind=None)] + fmt_args
+        new_args: list[ast.expr] = [ast.Constant(value=fmt, kind=None)]  # type: ignore[list-item]
+        new_args.extend(fmt_args)  # type: ignore[arg-type]
 
         # Preserve any original *extra* positional args after message (rare)
         # They probably weren't used with f-strings, but we keep them to be safe.

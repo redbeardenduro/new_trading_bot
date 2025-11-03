@@ -459,7 +459,7 @@ def get_sentiment_statistics(items: List[Dict]) -> Dict[str, float]:
     default_stats = {"mean": 0.0, "median": 0.0, "stdev": 0.0, "min": 0.0, "max": 0.0, "count": 0.0}
     if not isinstance(items, list) or not items:
         return default_stats
-    sentiments = []
+    sentiments: list = []
     for item in items:
         if isinstance(item, dict):
             sentiment_val = item.get("sentiment")

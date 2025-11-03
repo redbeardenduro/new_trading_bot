@@ -120,7 +120,7 @@ def process_file(filepath: Path) -> Tuple[bool, str]:
         return False, f"Error processing {filepath}: {e}"
 
 
-def main():
+def main() -> None:
     """Main entry point."""
     base_dir = Path(__file__).parent
 

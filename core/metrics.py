@@ -193,7 +193,7 @@ def track_exchange_api_call(exchange: str, endpoint: str) -> Callable[[F], F]:
     def decorator(func: F) -> F:
 
         @wraps(func)
-        def wrapper(*args: Any, **kwargs) -> Any:
+        def wrapper(*args: Any, **kwargs: Any) -> Any:  # type: ignore[no-untyped-def]
             start_time = time.time()
             status = "success"
             try:
@@ -228,7 +228,7 @@ def track_internal_api_call(endpoint: str, method: str = "GET") -> Callable[[F],
     def decorator(func: F) -> F:
 
         @wraps(func)
-        def wrapper(*args: Any, **kwargs) -> Any:
+        def wrapper(*args: Any, **kwargs: Any) -> Any:  # type: ignore[no-untyped-def]
             internal_api_requests_total.labels(endpoint=endpoint, method=method).inc()
             start_time = time.time()
             status = "success"
@@ -355,7 +355,7 @@ def get_metrics() -> bytes:
     Returns:
         Metrics in Prometheus text format
     """
-    return generate_latest(REGISTRY)
+    return generate_latest(REGISTRY)  # type: ignore[no-any-return]
 
 
 def get_content_type() -> str:
@@ -365,7 +365,7 @@ def get_content_type() -> str:
     Returns:
         Content type string
     """
-    return CONTENT_TYPE_LATEST
+    return CONTENT_TYPE_LATEST  # type: ignore[no-any-return]
 
 
 def initialize_bot_info(version: str, mode: str, strategy: str, config_hash: str) -> None:

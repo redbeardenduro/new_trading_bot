@@ -53,7 +53,7 @@ class EnhancedBacktesting:
         self.data_dir = data_dir or os.path.join(
             os.path.dirname(__file__), "..", "data", "backtest_results"
         )
-        self.results_cache = {}
+        self.results_cache: dict = {}
 
     def load_backtest_results(self, run_ids: List[str] = None) -> List[BacktestResult]:
         """
@@ -65,7 +65,7 @@ class EnhancedBacktesting:
         Returns:
             List of BacktestResult objects
         """
-        results = []
+        results: list = []
         try:
             if not os.path.exists(self.data_dir):
                 logger.warning("Backtest data directory not found: %s", self.data_dir)
@@ -100,12 +100,12 @@ class EnhancedBacktesting:
         with open(metrics_file, "r") as f:
             metrics_data = json.load(f)
         trades_file = os.path.join(run_dir, f"backtest_trades_{run_id}.json")
-        trades = []
+        trades: list = []
         if os.path.exists(trades_file):
             with open(trades_file, "r") as f:
                 trades = json.load(f)
         portfolio_file = os.path.join(run_dir, f"backtest_portfolio_{run_id}.json")
-        portfolio_history = []
+        portfolio_history: list = []
         if os.path.exists(portfolio_file):
             with open(portfolio_file, "r") as f:
                 portfolio_data = json.load(f)
@@ -158,8 +158,8 @@ class EnhancedBacktesting:
         try:
             results = self.load_backtest_results()
             if not results:
-                return {"error": "No backtest results available"}
-            windows = []
+                return {"error": "No backtest results available"}  # type: ignore[dict-item]
+            windows: list = []
             window_results = []
             results.sort(key=lambda x: x.start_date)
             if start_date and end_date:
@@ -180,7 +180,7 @@ class EnhancedBacktesting:
                     )
                     current_date += timedelta(days=step_days)
             for i, window in enumerate(windows):
-                window_train_results = []
+                window_train_results: list = []
                 window_test_results = []
                 for result in results:
                     result_start = datetime.fromisoformat(result.start_date.replace("Z", "+00:00"))
@@ -236,7 +236,7 @@ class EnhancedBacktesting:
             }
         except Exception as e:
             logger.error("Error in walk-forward analysis: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     def strategy_comparison_matrix(self, metrics: List[str] = None) -> Dict[str, Any]:
         """
@@ -251,7 +251,7 @@ class EnhancedBacktesting:
         try:
             results = self.load_backtest_results()
             if not results:
-                return {"error": "No backtest results available"}
+                return {"error": "No backtest results available"}  # type: ignore[dict-item]
             if not metrics:
                 metrics = [
                     "total_return",
@@ -260,7 +260,7 @@ class EnhancedBacktesting:
                     "win_rate",
                     "profit_factor",
                 ]
-            comparison_data = []
+            comparison_data: list = []
             for result in results:
                 row = {
                     "run_id": result.run_id,
@@ -304,7 +304,7 @@ class EnhancedBacktesting:
             }
         except Exception as e:
             logger.error("Error in strategy comparison: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     def trade_analysis_dashboard(self, run_id: str = None) -> Dict[str, Any]:
         """
@@ -323,15 +323,15 @@ class EnhancedBacktesting:
             else:
                 results = self.load_backtest_results()
             if not results:
-                return {"error": "No backtest results available"}
-            all_trades = []
+                return {"error": "No backtest results available"}  # type: ignore[dict-item]
+            all_trades: list = []
             for result in results:
                 for trade in result.trades:
                     trade_copy = trade.copy()
                     trade_copy["run_id"] = result.run_id
                     all_trades.append(trade_copy)
             if not all_trades:
-                return {"error": "No trades found"}
+                return {"error": "No trades found"}  # type: ignore[dict-item]
             winning_trades = [t for t in all_trades if t.get("pnl", 0) > 0]
             losing_trades = [t for t in all_trades if t.get("pnl", 0) < 0]
             total_trades = len(all_trades)
@@ -339,7 +339,7 @@ class EnhancedBacktesting:
             total_pnl = sum((t.get("pnl", 0) for t in all_trades))
             avg_win = np.mean([t.get("pnl", 0) for t in winning_trades]) if winning_trades else 0
             avg_loss = np.mean([t.get("pnl", 0) for t in losing_trades]) if losing_trades else 0
-            durations = []
+            durations: list = []
             for trade in all_trades:
                 if "entry_time" in trade and "exit_time" in trade:
                     try:
@@ -418,7 +418,7 @@ class EnhancedBacktesting:
             }
         except Exception as e:
             logger.error("Error in trade analysis: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     def performance_heatmaps(self) -> Dict[str, Any]:
         """
@@ -430,7 +430,7 @@ class EnhancedBacktesting:
         try:
             results = self.load_backtest_results()
             if not results:
-                return {"error": "No backtest results available"}
+                return {"error": "No backtest results available"}  # type: ignore[dict-item]
             monthly_returns = {}
             yearly_returns = {}
             for result in results:
@@ -516,7 +516,7 @@ class EnhancedBacktesting:
             }
         except Exception as e:
             logger.error("Error generating heatmaps: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     def correlation_analysis(self) -> Dict[str, Any]:
         """
@@ -528,7 +528,7 @@ class EnhancedBacktesting:
         try:
             results = self.load_backtest_results()
             if len(results) < 2:
-                return {"error": "Need at least 2 backtest results for correlation analysis"}
+                return {"error": "Need at least 2 backtest results for correlation analysis"}  # type: ignore[dict-item]
             returns_data = {}
             for result in results:
                 if len(result.portfolio_history) > 1:
@@ -536,7 +536,7 @@ class EnhancedBacktesting:
                     returns = np.diff(portfolio_values) / portfolio_values[:-1]
                     returns_data[result.run_id] = returns
             if len(returns_data) < 2:
-                return {"error": "Insufficient data for correlation analysis"}
+                return {"error": "Insufficient data for correlation analysis"}  # type: ignore[dict-item]
             min_length = min((len(returns) for returns in returns_data.values()))
             aligned_returns = {}
             for run_id, returns in returns_data.items():
@@ -553,7 +553,7 @@ class EnhancedBacktesting:
                             0, 1
                         ]
                         correlation_matrix[i, j] = corr if not np.isnan(corr) else 0.0
-            high_correlations = []
+            high_correlations: list = []
             for i in range(n_strategies):
                 for j in range(i + 1, n_strategies):
                     corr = correlation_matrix[i, j]
@@ -593,7 +593,7 @@ class EnhancedBacktesting:
             }
         except Exception as e:
             logger.error("Error in correlation analysis: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     def optimization_engine(
         self,
@@ -622,10 +622,10 @@ class EnhancedBacktesting:
             elif method == "random":
                 return self._random_search_optimization(parameter_ranges, objective, max_iterations)
             else:
-                return {"error": f"Unknown optimization method: {method}"}
+                return {"error": f"Unknown optimization method: {method}"}  # type: ignore[dict-item]
         except Exception as e:
             logger.error("Error in optimization: %s", e)
-            return {"error": str(e)}
+            return {"error": str(e)}  # type: ignore[dict-item]
 
     def _genetic_optimization(
         self, parameter_ranges: Dict[str, List], objective: str, max_iterations: int
@@ -633,7 +633,7 @@ class EnhancedBacktesting:
         """Genetic algorithm optimization"""
         results = self.load_backtest_results()
         if not results:
-            return {"error": "No backtest results for optimization"}
+            return {"error": "No backtest results for optimization"}  # type: ignore[dict-item]
         param_performance = {}
         for result in results:
             param_key = json.dumps(result.parameters, sort_keys=True)
@@ -641,16 +641,16 @@ class EnhancedBacktesting:
         population_size = 20
         mutation_rate = 0.1
         crossover_rate = 0.8
-        population = []
+        population: list = []
         for _ in range(population_size):
             individual = {}
             for param, values in parameter_ranges.items():
                 individual[param] = random.choice(values)
             population.append(individual)
-        best_fitness_history = []
+        best_fitness_history: list = []
         avg_fitness_history = []
         for generation in range(max_iterations):
-            fitness_scores = []
+            fitness_scores: list = []
             for individual in population:
                 param_key = json.dumps(individual, sort_keys=True)
                 fitness = param_performance.get(param_key, 0)
@@ -659,7 +659,7 @@ class EnhancedBacktesting:
             avg_fitness = np.mean(fitness_scores)
             best_fitness_history.append(best_fitness)
             avg_fitness_history.append(avg_fitness)
-            new_population = []
+            new_population: list = []
             for _ in range(population_size):
                 tournament_size = 3
                 tournament_indices = random.sample(range(population_size), tournament_size)
@@ -680,7 +680,7 @@ class EnhancedBacktesting:
                     param = random.choice(list(parameter_ranges.keys()))
                     individual[param] = random.choice(parameter_ranges[param])
             population = new_population
-        final_fitness = []
+        final_fitness: list = []
         for individual in population:
             param_key = json.dumps(individual, sort_keys=True)
             fitness = param_performance.get(param_key, 0)
@@ -707,7 +707,7 @@ class EnhancedBacktesting:
         """Grid search optimization"""
         results = self.load_backtest_results()
         if not results:
-            return {"error": "No backtest results for optimization"}
+            return {"error": "No backtest results for optimization"}  # type: ignore[dict-item]
         param_performance = {}
         for result in results:
             param_key = json.dumps(result.parameters, sort_keys=True)
@@ -715,7 +715,7 @@ class EnhancedBacktesting:
         param_names = list(parameter_ranges.keys())
         param_values = list(parameter_ranges.values())
         all_combinations = list(product(*param_values))
-        results_grid = []
+        results_grid: list = []
         for combination in all_combinations:
             params = dict(zip(param_names, combination))
             param_key = json.dumps(params, sort_keys=True)
@@ -740,12 +740,12 @@ class EnhancedBacktesting:
         """Random search optimization"""
         results = self.load_backtest_results()
         if not results:
-            return {"error": "No backtest results for optimization"}
+            return {"error": "No backtest results for optimization"}  # type: ignore[dict-item]
         param_performance = {}
         for result in results:
             param_key = json.dumps(result.parameters, sort_keys=True)
             param_performance[param_key] = result.metrics.get(objective, 0)
-        search_results = []
+        search_results: list = []
         for _ in range(max_iterations):
             params = {}
             for param, values in parameter_ranges.items():
@@ -818,11 +818,11 @@ class EnhancedBacktesting:
                 if label not in clusters:
                     clusters[label] = []
                 clusters[label].append(strategy_names[i])
-            suggestions = []
+            suggestions: list = []
             for cluster_id, strategies in clusters.items():
                 if len(strategies) > 1:
                     indices = [strategy_names.index(s) for s in strategies]
-                    cluster_correlations = []
+                    cluster_correlations: list = []
                     for i in range(len(indices)):
                         for j in range(i + 1, len(indices)):
                             cluster_correlations.append(correlation_matrix[indices[i], indices[j]])

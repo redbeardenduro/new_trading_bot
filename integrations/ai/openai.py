@@ -882,7 +882,7 @@ class OpenAIAPI(IAIAnalyzerType):
         if not self._check_client():
             return {s: default_error for s in assets_data}
         if not isinstance(assets_data, dict):
-            return {"error": "Invalid assets_data input"}
+            return {"error": "Invalid assets_data input"}  # type: ignore[dict-item]
         concurrency = int(self.settings["concurrency_limit"])
         logger.info(
             "Analyzing %s assets concurrently (Max Concurrency: %s)...",
@@ -890,7 +890,7 @@ class OpenAIAPI(IAIAnalyzerType):
             concurrency,
         )
         semaphore = asyncio.Semaphore(concurrency)
-        tasks = []
+        tasks: list = []
         for symbol, data in assets_data.items():
             if isinstance(data, dict):
                 tasks.append(self._run_analysis_with_semaphore(semaphore, data, symbol))
@@ -1038,7 +1038,7 @@ class OpenAIAPI(IAIAnalyzerType):
                     current_price = float(price_val)
             except (IndexError, ValueError, TypeError):
                 pass
-        ohlcv_recent = []
+        ohlcv_recent: list = []
         if isinstance(ohlcv, list):
             try:
                 ohlcv_recent = [
@@ -1286,7 +1286,7 @@ def log_openai_analysis(
             log_entry["strategy_result"] = result_metadata.get("recommendation")
         elif analysis_type == "technical":
             log_entry["strategy_result"] = result_metadata.get("signal")
-    existing_logs = []
+    existing_logs: list = []
     if log_file.exists():
         try:
             with log_file.open("r", encoding="utf-8") as f:

@@ -27,7 +27,7 @@ def fix_file(filepath: Path) -> bool:
     return False
 
 
-def main():
+def main() -> None:
     """Main entry point."""
     base_dir = Path(__file__).parent
 

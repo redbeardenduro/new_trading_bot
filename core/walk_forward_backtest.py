@@ -140,7 +140,7 @@ class WalkForwardBacktester:
         Returns:
             List of (in_sample_start, in_sample_end, out_sample_start, out_sample_end) tuples
         """
-        windows = []
+        windows: list = []
         if "timestamp" in self.data.columns:
             start_date = self.data["timestamp"].min()
             end_date = self.data["timestamp"].max()
@@ -215,7 +215,7 @@ class WalkForwardBacktester:
 
         keys = list(self.param_grid.keys())
         values = list(self.param_grid.values())
-        combinations = []
+        combinations: list = []
         for combination in itertools.product(*values):
             param_dict = dict(zip(keys, combination))
             combinations.append(param_dict)
@@ -248,7 +248,7 @@ class WalkForwardBacktester:
         Returns:
             List of trade dictionaries
         """
-        trades = []
+        trades: list = []
         position = 0
         entry_price = 0.0
         capital = self.initial_capital
@@ -391,7 +391,7 @@ class WalkForwardBacktester:
         window_specs = self._generate_windows()
         if not window_specs:
             raise ValueError("No valid windows generated. Check data range and window sizes.")
-        windows = []
+        windows: list = []
         total_trades = 0
         profitable_windows = 0
         for i, (in_start, in_end, out_start, out_end) in enumerate(window_specs):

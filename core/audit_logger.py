@@ -429,7 +429,7 @@ class AuditLogger:
         all_log_files = sorted(self.storage_dir.glob("audit_*.jsonl*"))
         if not start_date and (not end_date):
             return all_log_files
-        filtered_files = []
+        filtered_files: list = []
         for log_file in all_log_files:
             try:
                 date_str = log_file.stem.replace("audit_", "").replace(".jsonl", "")
