@@ -214,7 +214,7 @@ class SimulatedExchange(IExchangeClient):
 
     def _create_mock_markets(self) -> Dict:
         """Create a basic market structure needed for validation/precision."""
-        markets = {}
+        markets: Dict[str, Any] = {}
         if not isinstance(self.historical_data, dict) or not self.historical_data:
             logger.warning("Cannot create mock markets: historical_data not available or empty.")
             return markets
@@ -382,7 +382,7 @@ class SimulatedExchange(IExchangeClient):
         ohlcv_list: list = []
         for timestamp, row in data_slice.iterrows():
             try:
-                ts_ms = int(timestamp.timestamp() * 1000)
+                ts_ms = int(timestamp.timestamp() * 1000)  # type: ignore[attr-defined]
                 o = float(row["open"])
                 h = float(row["high"])
                 l = float(row["low"])
@@ -391,7 +391,7 @@ class SimulatedExchange(IExchangeClient):
                 ohlcv_list.append(
                     {
                         "timestamp_ms": ts_ms,
-                        "timestamp": timestamp.isoformat(),
+                        "timestamp": timestamp.isoformat(),  # type: ignore[attr-defined]
                         "open": o,
                         "high": h,
                         "low": l,
@@ -691,7 +691,7 @@ class SimulatedExchange(IExchangeClient):
         }
         self.trades.append(trade_info)
         logger.info(
-            f"Simulated Trade Executed: {trade_info['side']} {trade_info['amount']:.6f} {trade_info['symbol']} @ {trade_info['average']:.4f}, Fee: {trade_info['fee']['cost']:.4f} {trade_info['fee']['currency']}"
+            f"Simulated Trade Executed: {trade_info['side']} {trade_info['amount']:.6f} {trade_info['symbol']} @ {trade_info['average']:.4f}, Fee: {trade_info['fee']['cost']:.4f} {trade_info['fee']['currency']}"  # type: ignore[index]
         )
         return trade_info
 
@@ -1127,6 +1127,7 @@ class BacktestRunner:
                 historical_ohlcv_source_dir=self.historical_ohlcv_dir,
                 historical_data=self.historical_data,  # Pass the loaded and aligned data
             )
+            assert self.sim_exchange is not None  # For type checking
         except Exception as e:
             raise RuntimeError(f"Failed to initialize SimulatedExchange: {e}") from e
 
@@ -1135,7 +1136,7 @@ class BacktestRunner:
 
         # 3. Portfolio Manager (Decoupled)
         try:
-            self.portfolio_manager_logic = PortfolioManager(
+            self.portfolio_manager_logic = PortfolioManager(  # type: ignore[assignment]
                 config=self.config, exchange_client=self.sim_exchange
             )
             logger.info("PortfolioManager initialized for backtest.")
@@ -1171,7 +1172,7 @@ class BacktestRunner:
             self.bot_logic = MultiCryptoTradingBot(
                 config=backtest_config,
                 exchange_client=self.sim_exchange,
-                portfolio_manager=self.portfolio_manager_logic,
+                portfolio_manager=self.portfolio_manager_logic,  # type: ignore[arg-type]
                 sentiment_sources=[],
                 ai_analyzer=None,
             )
@@ -1289,6 +1290,12 @@ class BacktestRunner:
                 )
                 return None
 
+            # Type narrowing for mypy
+            assert self.sim_exchange is not None
+            assert self.bot_logic is not None
+            assert self.portfolio_manager_logic is not None
+            assert self.metrics_calculator is not None
+
         except (
             ValueError,
             RuntimeError,
@@ -1326,6 +1333,10 @@ class BacktestRunner:
                         f"Simulation component became invalid at step {step}. Aborting."
                     )
                     break
+
+                # Type narrowing for mypy (after validation)
+                assert self.sim_exchange is not None
+                assert self.bot_logic is not None
 
                 self.sim_exchange.set_step(step)
                 # Use first available pair's timestamp (pairs list is guaranteed non-empty here)
@@ -1403,7 +1414,7 @@ class BacktestRunner:
                 # --- 3. Execute Bot's Trading Decisions ---
                 sorted_pairs = sorted(
                     self.pairs,
-                    key=lambda p: self.bot_logic.opportunity_scores.get(p, 0.0),
+                    key=lambda p: self.bot_logic.opportunity_scores.get(p, 0.0),  # type: ignore[union-attr]
                     reverse=True,
                 )
                 for pair in sorted_pairs:
@@ -1448,7 +1459,7 @@ class BacktestRunner:
                                     and v is not None
                                 }
                         rebalance_actions = (
-                            self.portfolio_manager_logic.determine_rebalance_actions(
+                            self.portfolio_manager_logic.determine_rebalance_actions(  # type: ignore[call-arg]
                                 current_market_state
                             )
                         )

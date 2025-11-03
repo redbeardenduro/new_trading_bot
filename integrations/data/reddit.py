@@ -29,8 +29,8 @@ try:
     praw_available = True
 except ImportError:
     print('WARNING: PRAW library not found. Reddit integration disabled. Run: pip install praw')
-    praw = None
-    prawcore = None
+    praw = None  # type: ignore[assignment]
+    prawcore = None  # type: ignore[assignment]
     praw_available = False
 
     class PrawcoreException(Exception):
@@ -78,7 +78,7 @@ try:
 except ImportError:
     logger.error('CRITICAL: Failed to import sentiment utilities from utils.sentiment_utils. Reddit analysis will be impaired.')
 
-    class SentimentTracker:
+    class SentimentTracker:  # type: ignore[no-redef]
 
         def __init__(self, history_length: int=0) -> None:
             pass
@@ -89,7 +89,7 @@ except ImportError:
         def get_statistics(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
             return {}
 
-    class SentimentAnalyzer:
+    class SentimentAnalyzer:  # type: ignore[no-redef]
 
         def __init__(self, model_type: str='') -> None:
             pass
@@ -97,19 +97,19 @@ except ImportError:
         def analyze(self, t: str) -> Dict[str, Any]:
             return {'score': 0.0, 'confidence': 0.0}
 
-    def calculate_time_weighted_sentiment(items: List[Any], **kwargs: Any) -> float:
+    def calculate_time_weighted_sentiment(items: List[Any], **kwargs: Any) -> float:  # type: ignore[misc]
         return 0.0
 
-    def adjust_sentiment_by_volume(s: float, i: int, b: int) -> float:
+    def adjust_sentiment_by_volume(s: float, i: int, b: int) -> float:  # type: ignore[misc]
         return s
 
-    def get_sentiment_statistics(items: List[Any]) -> Dict[str, Any]:
+    def get_sentiment_statistics(items: List[Any]) -> Dict[str, Any]:  # type: ignore[misc]
         return {}
 
-    def normalize_sentiment_score(s: float, **kwargs: Any) -> float:
+    def normalize_sentiment_score(s: float, **kwargs: Any) -> float:  # type: ignore[misc]
         return s
 
-    def preprocess_text(t: str) -> str:
+    def preprocess_text(t: str) -> str:  # type: ignore[misc]
         return t
 
 def preprocess_post_text(post: Union[Dict, Any]) -> str:
@@ -197,15 +197,15 @@ def log_reddit_sentiment(symbol: str, analyzed_posts: List[Dict]) -> None:
                         logger.warning('Existing log file %s is not a list. Overwriting.', log_file)
         except json.JSONDecodeError:
             logger.error('Error decoding JSON from %s. Log file might be corrupted. Overwriting.', log_file)
-            existing_logs: list = []
+            existing_logs = []  # type: ignore[assignment]
             existing_urls = set()
         except OSError as e:
             logger.error('OS error reading log file %s: %s. Will attempt to overwrite.', log_file, e)
-            existing_logs: list = []
+            existing_logs = []  # type: ignore[assignment]
             existing_urls = set()
         except Exception as e:
             logger.error('Unexpected error loading log file %s: %s. Will attempt to overwrite.', log_file, e, exc_info=True)
-            existing_logs: list = []
+            existing_logs = []  # type: ignore[assignment]
             existing_urls = set()
     new_entries_to_add: list = []
     log_timestamp = datetime.now(timezone.utc).isoformat()
@@ -274,7 +274,7 @@ class RedditAPI(ISentimentSourceType):
                 logger.error('Reddit credentials missing or incomplete in config.')
                 raise ValueError('Reddit credentials missing or incomplete.')
             self.reddit = praw.Reddit(client_id=creds.client_id, client_secret=creds.client_secret, username=creds.username, password=creds.password, user_agent=creds.user_agent, check_for_async=False)
-            authenticated_user = self.reddit.user.me()
+            authenticated_user = self.reddit.user.me()  # type: ignore[attr-defined]
             if authenticated_user is None:
                 logger.critical('Reddit authentication check failed: PRAW returned None for authenticated user. Reddit functionality disabled.')
                 self.reddit = None
@@ -329,7 +329,7 @@ class RedditAPI(ISentimentSourceType):
             if cached and isinstance(cached, str):
                 return (True, cached)
             self.rate_limiter.wait_if_needed()
-            user = self.reddit.user.me()
+            user = self.reddit.user.me()  # type: ignore[attr-defined]
             if user is None:
                 raise ConnectionError('Authentication check failed: user object is None.')
             result = f'Connection successful. Authenticated as user: {user.name}'

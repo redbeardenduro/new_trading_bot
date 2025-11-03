@@ -47,19 +47,19 @@ try:
     sentiment_utils_available = True
 except ImportError:
     logger.error('CRITICAL: Failed to import sentiment utilities from utils.sentiment_utils. News analysis will be impaired.')
-    SentimentTracker = type('SentimentTracker', (), {})  # type: ignore[misc]
-    SentimentAnalyzer = type('SentimentAnalyzer', (), {})  # type: ignore[misc]
+    SentimentTracker = type('SentimentTracker', (), {})  # type: ignore[assignment]
+    SentimentAnalyzer = type('SentimentAnalyzer', (), {})  # type: ignore[assignment]
 
-    def calculate_time_weighted_sentiment(items: Any, **kwargs: Any) -> float:
+    def calculate_time_weighted_sentiment(items: Any, **kwargs: Any) -> float:  # type: ignore[misc]
         return 0.0
 
-    def adjust_sentiment_by_volume(s: Any, i: Any, b: Any) -> Any:
+    def adjust_sentiment_by_volume(s: Any, i: Any, b: Any) -> Any:  # type: ignore[misc]
         return s
 
-    def get_sentiment_statistics(items: Any) -> dict:
+    def get_sentiment_statistics(items: Any) -> dict:  # type: ignore[misc]
         return {}
 
-    def normalize_sentiment_score(s: Any, **kwargs: Any) -> Any:
+    def normalize_sentiment_score(s: Any, **kwargs: Any) -> Any:  # type: ignore[misc]
         return s
 
 class NewsAPIRateLimitError(Exception):
@@ -103,15 +103,15 @@ def log_news_sentiment(symbol: str, articles_to_log: List[Dict]) -> None:
                         logger.warning('Existing log file %s is not a list. Overwriting.', log_file)
         except json.JSONDecodeError:
             logger.error('Error decoding JSON from %s. Log file might be corrupted. Overwriting.', log_file)
-            existing_logs: list = []
+            existing_logs = []  # type: ignore[assignment]
             existing_urls = set()
         except OSError as e:
             logger.error('OS error reading log file %s: %s. Will attempt to overwrite.', log_file, e)
-            existing_logs: list = []
+            existing_logs = []  # type: ignore[assignment]
             existing_urls = set()
         except Exception as e:
             logger.error('Unexpected error loading log file %s: %s. Will attempt to overwrite.', log_file, e, exc_info=True)
-            existing_logs: list = []
+            existing_logs = []  # type: ignore[assignment]
             existing_urls = set()
     new_entries_to_add: list = []
     log_timestamp = datetime.now(timezone.utc).isoformat()
@@ -309,7 +309,7 @@ class NewsAPI(ISentimentSourceType):
             return (False, 'API key missing.')
         self._check_rate_limit()
         if self.rate_limited:
-            return (False, f'Connection test skipped: Currently rate limited until approx {self.rate_limit_until.isoformat()}')
+            return (False, f'Connection test skipped: Currently rate limited until approx {self.rate_limit_until.isoformat()}')  # type: ignore[union-attr]
         logger.info('Testing NewsAPI connection...')
         params = {'q': 'market', 'pageSize': 1, 'language': 'en'}
         try:
@@ -337,7 +337,7 @@ class NewsAPI(ISentimentSourceType):
             logger.error('Connection test failed unexpectedly: %s', e, exc_info=True)
             return (False, f'Connection failed: Unexpected error - {e}')
 
-    def get_sentiment_analysis(self, crypto_symbol: str, **kwargs) -> Dict:
+    def get_sentiment_analysis(self, crypto_symbol: str, **kwargs) -> Dict:  # type: ignore[no-untyped-def]
         """
         Fetches news articles for the symbol and analyzes their sentiment.
         Uses cached data as fallback if rate limited.

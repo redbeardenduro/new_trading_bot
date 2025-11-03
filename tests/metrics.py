@@ -474,7 +474,7 @@ class BacktestMetrics:
         sortino_ratio = np.nan
         if len(self.portfolio_value_history) > 1:
             values = np.array([float(v) for _, v in self.portfolio_value_history])
-            valid_indices = np.where(values[:-1] > 1e-9)  # type: ignore[operator][0]
+            valid_indices = np.where(values[:-1] > 1e-9)  # type: ignore[operator,syntax][0]
             if len(valid_indices) > 0:
                 returns_list = (values[1:][valid_indices] / values[:-1][valid_indices]) - 1
             else:

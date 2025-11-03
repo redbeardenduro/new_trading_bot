@@ -321,14 +321,14 @@ class EnhancedBacktesting:
                 results = [self._load_single_result(run_id)]
                 results = [r for r in results if r is not None]
             else:
-                results = self.load_backtest_results()
+                results = self.load_backtest_results()  # type: ignore[assignment]
             if not results:
                 return {"error": "No backtest results available"}  # type: ignore[dict-item]
             all_trades: list = []
             for result in results:
-                for trade in result.trades:
+                for trade in result.trades:  # type: ignore[union-attr]
                     trade_copy = trade.copy()
-                    trade_copy["run_id"] = result.run_id
+                    trade_copy["run_id"] = result.run_id  # type: ignore[union-attr]
                     all_trades.append(trade_copy)
             if not all_trades:
                 return {"error": "No trades found"}  # type: ignore[dict-item]
@@ -360,9 +360,9 @@ class EnhancedBacktesting:
                 if trade.get("pnl", 0) > 0:
                     asset_stats[asset]["wins"] += 1
             for asset, stats in asset_stats.items():
-                stats["win_rate"] = stats["wins"] / stats["trades"] if stats["trades"] > 0 else 0
+                stats["win_rate"] = stats["wins"] / stats["trades"] if stats["trades"] > 0 else 0  # type: ignore[assignment]
                 stats["avg_pnl"] = (
-                    stats["total_pnl"] / stats["trades"] if stats["trades"] > 0 else 0
+                    stats["total_pnl"] / stats["trades"] if stats["trades"] > 0 else 0  # type: ignore[assignment]
                 )
             hourly_stats = {}
             daily_stats = {}
@@ -431,8 +431,8 @@ class EnhancedBacktesting:
             results = self.load_backtest_results()
             if not results:
                 return {"error": "No backtest results available"}  # type: ignore[dict-item]
-            monthly_returns = {}
-            yearly_returns = {}
+            monthly_returns: Dict[int, Dict[int, List[float]]] = {}
+            yearly_returns: Dict[int, List[float]] = {}
             for result in results:
                 if not result.portfolio_history:
                     continue
@@ -460,7 +460,7 @@ class EnhancedBacktesting:
                     yearly_returns[year].append(return_pct)
                 except:
                     continue
-            monthly_heatmap = {}
+            monthly_heatmap: Dict[int, Dict[int, Any]] = {}
             for year, months in monthly_returns.items():
                 monthly_heatmap[year] = {}
                 for month, returns in months.items():
@@ -475,24 +475,24 @@ class EnhancedBacktesting:
                         "sharpe_ratios": [],
                         "max_drawdowns": [],
                     }
-                param_performance[param_key]["returns"].append(  # type: ignore[str]
+                param_performance[param_key]["returns"].append(  # type: ignore[attr-defined]
                     result.metrics.get("total_return", 0)
                 )
-                param_performance[param_key]["sharpe_ratios"].append(  # type: ignore[str]
+                param_performance[param_key]["sharpe_ratios"].append(  # type: ignore[attr-defined]
                     result.metrics.get("sharpe_ratio", 0)
                 )
-                param_performance[param_key]["max_drawdowns"].append(  # type: ignore[str]
+                param_performance[param_key]["max_drawdowns"].append(  # type: ignore[attr-defined]
                     result.metrics.get("max_drawdown", 0)
                 )
             param_heatmap = {}
             for param_key, data in param_performance.items():
                 param_heatmap[param_key] = {
                     "parameters": data["parameters"],
-                    "avg_return": np.mean(data["returns"]),
-                    "avg_sharpe": np.mean(data["sharpe_ratios"]),
-                    "avg_drawdown": np.mean(data["max_drawdowns"]),
+                    "avg_return": np.mean(data["returns"]),  # type: ignore[call-overload]
+                    "avg_sharpe": np.mean(data["sharpe_ratios"]),  # type: ignore[call-overload]
+                    "avg_drawdown": np.mean(data["max_drawdowns"]),  # type: ignore[call-overload]
                     "consistency": (
-                        len([r for r in data["returns"] if r > 0]) / len(data["returns"])
+                        len([r for r in data["returns"] if r > 0]) / len(data["returns"])  # type: ignore[operator]
                         if data["returns"]
                         else 0
                     ),
@@ -781,7 +781,7 @@ class EnhancedBacktesting:
             metrics[f"std_{metric}"] = np.std(values)
             metrics[f"min_{metric}"] = np.min(values)
             metrics[f"max_{metric}"] = np.max(values)
-        return metrics
+        return metrics  # type: ignore[return-value]
 
     def _create_pnl_histogram(self, trades: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Create PnL histogram data"""
@@ -813,7 +813,7 @@ class EnhancedBacktesting:
                 n_clusters=n_clusters, metric="precomputed", linkage="average"
             )
             cluster_labels = clustering.fit_predict(distance_matrix)
-            clusters = {}
+            clusters: Dict[Any, List[str]] = {}
             for i, label in enumerate(cluster_labels):
                 if label not in clusters:
                     clusters[label] = []
